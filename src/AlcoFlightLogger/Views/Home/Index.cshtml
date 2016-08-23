@@ -3,14 +3,14 @@
 }
 
 <br/>
-<div id="map_canvas" style="width: 640px; height: 480px;">
+<div id="map_canvas" style="width: 80%; height: 600px;">
 </div>
 
 <script type="text/javascript">
     function initMap() {
         var map = new google.maps.Map(document.getElementById('map_canvas'), {
             center: { lat: -34.397, lng: 150.644 },
-            zoom: 6
+            zoom: 20
         });
         var infoWindow = new google.maps.InfoWindow({ map: map });
 
