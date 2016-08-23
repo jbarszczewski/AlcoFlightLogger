@@ -6,7 +6,7 @@
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>08c7f278-e146-4b51-bc82-6e59fc1a7bec</ProjectGuid>
+    <ProjectGuid>722f1037-4716-4a0d-83d9-7c8e371cee01</ProjectGuid>
     <RootNamespace>AlcoFlightLogger</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
