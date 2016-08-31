@@ -1,4 +1,4 @@
-﻿{
+{
   "userSecretsId": "aspnet-AlcoFlightLogger-c1d17cad-b44f-46e1-8ed9-c958a606a4c1",
 
   "dependencies": {
@@ -42,7 +42,8 @@
     "Microsoft.VisualStudio.Web.CodeGenerators.Mvc": {
       "version": "1.0.0-preview2-final",
       "type": "build"
-    }
+    },
+    "Microsoft.AspNetCore.Authentication.Facebook": "1.0.0"
   },
 
   "tools": {

@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using AlcoFlightLogger.Data;
 using AlcoFlightLogger.Models;
 using AlcoFlightLogger.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AlcoFlightLogger
 {
@@ -52,6 +53,12 @@ namespace AlcoFlightLogger
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+
+            //Add ssl
+            services.Configure<MvcOptions>(options =>
+            {
+                options.Filters.Add(new RequireHttpsAttribute());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -76,6 +83,12 @@ namespace AlcoFlightLogger
             app.UseIdentity();
 
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
+
+            app.UseFacebookAuthentication(new FacebookOptions()
+            {
+                AppId = Configuration.GetSection("FacebookAuthentication")["AppId"],
+                AppSecret = Configuration.GetSection("FacebookAuthentication")["AppSecret"]
+            });
 
             app.UseMvc(routes =>
             {
