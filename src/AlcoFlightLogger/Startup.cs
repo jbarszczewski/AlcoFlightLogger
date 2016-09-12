@@ -84,12 +84,13 @@ namespace AlcoFlightLogger
 
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
 
+            /* TODO: uncomment when ssl sorted out
             app.UseFacebookAuthentication(new FacebookOptions()
             {
                 AppId = Configuration.GetSection("FacebookAuthentication")["AppId"],
                 AppSecret = Configuration.GetSection("FacebookAuthentication")["AppSecret"]
             });
-
+            */
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
