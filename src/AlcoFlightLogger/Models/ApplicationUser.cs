@@ -11,9 +11,9 @@ namespace AlcoFlightLogger.Models
     {
         public ApplicationUser()
         {
-            this.FlightEntries = new List<FlightEntry>();
+            this.FlightEntries = new HashSet<FlightEntry>();
         }
 
-        public IEnumerable<FlightEntry> FlightEntries { get; set; }
+        public ICollection<FlightEntry> FlightEntries { get; set; }
     }
 }
