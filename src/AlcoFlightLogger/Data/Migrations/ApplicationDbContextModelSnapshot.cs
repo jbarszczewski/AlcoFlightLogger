@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using AlcoFlightLogger.Data;
 
-namespace AlcoFlightLogger.Data.Migrations
+namespace AlcoFlightLogger.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -15,6 +15,22 @@ namespace AlcoFlightLogger.Data.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("AlcoFlightLogger.Models.AdditionalData", b =>
+                {
+                    b.Property<int>("AdditionalDataId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("DataValue");
+
+                    b.Property<int>("FlightEntryId");
+
+                    b.HasKey("AdditionalDataId");
+
+                    b.HasIndex("FlightEntryId");
+
+                    b.ToTable("AdditionalData");
+                });
 
             modelBuilder.Entity("AlcoFlightLogger.Models.ApplicationUser", b =>
                 {
@@ -70,20 +86,17 @@ namespace AlcoFlightLogger.Data.Migrations
                     b.Property<int>("FlightEntryId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("ApplicationUserId");
-
                     b.Property<DateTime>("Date");
 
                     b.Property<string>("Latitude");
 
                     b.Property<string>("Longitude");
 
-                    b.Property<string>("UserId")
-                        .IsRequired();
+                    b.Property<string>("UserId");
 
                     b.HasKey("FlightEntryId");
 
-                    b.HasIndex("ApplicationUserId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("FlightEntries");
                 });
@@ -195,11 +208,19 @@ namespace AlcoFlightLogger.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("AlcoFlightLogger.Models.AdditionalData", b =>
+                {
+                    b.HasOne("AlcoFlightLogger.Models.FlightEntry", "Entry")
+                        .WithMany("Datas")
+                        .HasForeignKey("FlightEntryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("AlcoFlightLogger.Models.FlightEntry", b =>
                 {
-                    b.HasOne("AlcoFlightLogger.Models.ApplicationUser")
+                    b.HasOne("AlcoFlightLogger.Models.ApplicationUser", "User")
                         .WithMany("FlightEntries")
-                        .HasForeignKey("ApplicationUserId");
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>

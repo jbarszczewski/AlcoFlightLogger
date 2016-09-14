@@ -55,14 +55,14 @@ namespace AlcoFlightLogger.Controllers
                 return BadRequest(ModelState);
             }
 
-            var flightEntry = await context.Users.SingleOrDefaultAsync(m => m.Id == id);
+            var user = await context.Users.Include(u => u.FlightEntries).SingleOrDefaultAsync(m => m.Id == id);
 
-            if (flightEntry == null)
+            if (user == null)
             {
                 return NotFound();
             }
 
-            return Ok(flightEntry.FlightEntries);
+            return Ok(user.FlightEntries);
         }
 
         // PUT: api/FlightEntries/5

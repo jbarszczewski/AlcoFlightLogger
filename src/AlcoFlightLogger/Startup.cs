@@ -13,6 +13,7 @@ using AlcoFlightLogger.Data;
 using AlcoFlightLogger.Models;
 using AlcoFlightLogger.Services;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace AlcoFlightLogger
 {
@@ -48,7 +49,7 @@ namespace AlcoFlightLogger
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddMvc();
+            services.AddMvc().AddJsonOptions(opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
