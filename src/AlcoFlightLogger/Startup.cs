@@ -50,6 +50,7 @@ namespace AlcoFlightLogger
                 .AddDefaultTokenProviders();
 
             services.AddMvc().AddJsonOptions(opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
+            services.AddSingleton<IFlightEntriesRepository, FlightEntriesRepository>();
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();

@@ -14,18 +14,18 @@ namespace AlcoFlightLogger.Controllers
     [Route("api/FlightEntries")]
     public class FlightEntriesController : Controller
     {
-        private readonly ApplicationDbContext context;
+        private readonly IFlightEntriesRepository repository;
 
-        public FlightEntriesController(ApplicationDbContext context)
+        public FlightEntriesController(IFlightEntriesRepository repository)
         {
-            this.context = context;
+            this.repository = repository;
         }
 
         // GET: api/FlightEntries
         [HttpGet]
         public IEnumerable<FlightEntry> GetFlightEntries()
         {
-            return context.FlightEntries;
+            return this.repository.GetAllFlightEntries();
         }
 
         // GET: api/FlightEntries/5
@@ -37,7 +37,7 @@ namespace AlcoFlightLogger.Controllers
                 return BadRequest(ModelState);
             }
 
-            FlightEntry flightEntry = await context.FlightEntries.SingleOrDefaultAsync(m => m.FlightEntryId == id);
+            FlightEntry flightEntry = await this.repository.GetFlightEntryById(id);
 
             if (flightEntry == null)
             {
@@ -55,7 +55,7 @@ namespace AlcoFlightLogger.Controllers
                 return BadRequest(ModelState);
             }
 
-            var user = await context.Users.Include(u => u.FlightEntries).SingleOrDefaultAsync(m => m.Id == id);
+            var user = await this.repository.GetUserById(id);
 
             if (user == null)
             {
@@ -63,41 +63,6 @@ namespace AlcoFlightLogger.Controllers
             }
 
             return Ok(user.FlightEntries);
-        }
-
-        // PUT: api/FlightEntries/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutFlightEntry([FromRoute] int id, [FromBody] FlightEntry flightEntry)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != flightEntry.FlightEntryId)
-            {
-                return BadRequest();
-            }
-
-            context.Entry(flightEntry).State = EntityState.Modified;
-
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!FlightEntryExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
         }
 
         // POST: api/FlightEntries
@@ -108,11 +73,10 @@ namespace AlcoFlightLogger.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            context.FlightEntries.Add(flightEntry);
+            
             try
             {
-                await context.SaveChangesAsync();
+                await this.repository.AddFlightEntry(flightEntry);
             }
             catch (DbUpdateException)
             {
@@ -129,30 +93,27 @@ namespace AlcoFlightLogger.Controllers
             return CreatedAtAction("GetFlightEntry", new { id = flightEntry.FlightEntryId }, flightEntry);
         }
 
-        // DELETE: api/FlightEntries/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteFlightEntry([FromRoute] int id)
+        // DELETE: api/FlightEntries/
+        [HttpDelete()]
+        public async Task<IActionResult> DeleteFlightEntry([FromBody] FlightEntry flightEntry)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            FlightEntry flightEntry = await context.FlightEntries.SingleOrDefaultAsync(m => m.FlightEntryId == id);
+            await this.repository.DeleteFlightEntry(flightEntry);
             if (flightEntry == null)
             {
                 return NotFound();
             }
-
-            context.FlightEntries.Remove(flightEntry);
-            await context.SaveChangesAsync();
 
             return Ok(flightEntry);
         }
 
         private bool FlightEntryExists(int id)
         {
-            return context.FlightEntries.Any(e => e.FlightEntryId == id);
+            return this.repository.GetAllFlightEntries().Any(e => e.FlightEntryId == id);
         }
     }
 }
