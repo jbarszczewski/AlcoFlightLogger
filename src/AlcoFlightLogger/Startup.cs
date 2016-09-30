@@ -11,9 +11,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using AlcoFlightLogger.Data;
 using AlcoFlightLogger.Models;
+using AlcoFlightLogger.Models.FlightEntryViewModels;
 using AlcoFlightLogger.Services;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace AlcoFlightLogger
 {
@@ -49,8 +52,13 @@ namespace AlcoFlightLogger
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddMvc().AddJsonOptions(opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
-            services.AddSingleton<IFlightEntriesRepository, FlightEntriesRepository>();
+            services.AddMvc()
+                .AddJsonOptions(opt =>
+                {
+                    opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    opt.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                });
+            services.AddScoped<IFlightEntriesRepository, FlightEntriesRepository>();
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
@@ -67,18 +75,23 @@ namespace AlcoFlightLogger
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            Mapper.Initialize(config =>
+            {
+                config.CreateMap<FlightEntryViewModel, FlightEntry>().ReverseMap();
+            });
+
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
                 app.UseBrowserLink();
+                loggerFactory.AddDebug(LogLevel.Information);
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                loggerFactory.AddDebug(LogLevel.Error);
             }
 
             app.UseStaticFiles();
@@ -90,8 +103,8 @@ namespace AlcoFlightLogger
             /* TODO: uncomment when ssl sorted out
             app.UseFacebookAuthentication(new FacebookOptions()
             {
-                AppId = Configuration.GetSection("FacebookAuthentication")["AppId"],
-                AppSecret = Configuration.GetSection("FacebookAuthentication")["AppSecret"]
+                AppId = Configuration["FacebookAuthentication:AppId"],
+                AppSecret = Configuration["FacebookAuthentication:AppSecret"]
             });
             */
             app.UseMvc(routes =>

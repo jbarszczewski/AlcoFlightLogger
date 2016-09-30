@@ -1,35 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using AlcoFlightLogger.Models;
+using AlcoFlightLogger.Models.FlightEntryViewModels;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AlcoFlightLogger.Controllers
 {
     public class HomeController : Controller
     {
+        private IFlightEntriesRepository repository;
+
+        public HomeController(IFlightEntriesRepository repository)
+        {
+            this.repository = repository;
+        }
+
         public IActionResult Index()
         {
             return View();
         }
 
-        public IActionResult About()
+        public IActionResult Flights()
         {
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
-        }
-
-        public IActionResult Error()
-        {
-            return View();
+            var flights = Mapper.Map<IEnumerable<FlightEntryViewModel>>(this.repository.GetAllFlightEntries());
+            return View(flights);
         }
     }
 }

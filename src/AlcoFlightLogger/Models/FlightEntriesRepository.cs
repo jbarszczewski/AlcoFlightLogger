@@ -18,30 +18,33 @@ namespace AlcoFlightLogger.Models
 
         public IEnumerable<FlightEntry> GetAllFlightEntries()
         {
-           return this.context.FlightEntries;
+            return this.context.FlightEntries;
+        }
+
+        public IEnumerable<FlightEntry> GetUserAllFlightEntries(string name)
+        {
+            return this.context.FlightEntries.Where(x => x.User.UserName.Equals(name));
         }
 
         public async Task<FlightEntry> GetFlightEntryById(int id)
         {
-            return await context.FlightEntries.SingleOrDefaultAsync(m => m.FlightEntryId.Equals(id));
+            return await this.context.FlightEntries.SingleOrDefaultAsync(m => m.FlightEntryId.Equals(id));
         }
-
-        public async Task<ApplicationUser> GetUserById(string id)
-        {
-            return await this.context.Users.SingleOrDefaultAsync(u => u.Id.Equals(id));
-        }
-
-        public async Task AddFlightEntry(FlightEntry flightEntry)
+        
+        public void AddFlightEntry(FlightEntry flightEntry)
         {
             this.context.Entry(flightEntry).State = EntityState.Modified;
-            await context.SaveChangesAsync();
         }
 
         public async Task<FlightEntry> DeleteFlightEntry(FlightEntry flightEntry)
         {
             this.context.Remove(flightEntry).State = EntityState.Deleted;
-            await context.SaveChangesAsync();
             return flightEntry;
+        }
+
+        public async Task<bool> SaveChanges()
+        {
+            return (await this.context.SaveChangesAsync()) > 0;
         }
     }
 }
