@@ -33,7 +33,7 @@ namespace AlcoFlightLogger.Models
         
         public void AddFlightEntry(FlightEntry flightEntry)
         {
-            this.context.Entry(flightEntry).State = EntityState.Modified;
+            this.context.Add(flightEntry);
         }
 
         public async Task<FlightEntry> DeleteFlightEntry(FlightEntry flightEntry)

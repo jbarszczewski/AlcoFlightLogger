@@ -2,6 +2,7 @@
 using AlcoFlightLogger.Models;
 using AlcoFlightLogger.Models.FlightEntryViewModels;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AlcoFlightLogger.Controllers
@@ -20,9 +21,10 @@ namespace AlcoFlightLogger.Controllers
             return View();
         }
 
+        [Authorize]
         public IActionResult Flights()
         {
-            var flights = Mapper.Map<IEnumerable<FlightEntryViewModel>>(this.repository.GetAllFlightEntries());
+            var flights = Mapper.Map<IEnumerable<FlightEntryViewModel>>(this.repository.GetUserAllFlightEntries(User.Identity.Name));
             return View(flights);
         }
     }

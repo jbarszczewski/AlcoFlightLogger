@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -7,6 +8,7 @@ using AlcoFlightLogger.Models;
 using AlcoFlightLogger.Models.FlightEntryViewModels;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace AlcoFlightLogger.Controllers
 {
@@ -15,10 +17,12 @@ namespace AlcoFlightLogger.Controllers
     [Route("api/FlightEntries")]
     public class FlightEntriesController : Controller
     {
+        private readonly UserManager<ApplicationUser> userManager;
         private readonly IFlightEntriesRepository repository;
 
-        public FlightEntriesController(IFlightEntriesRepository repository)
+        public FlightEntriesController(UserManager<ApplicationUser> userManager, IFlightEntriesRepository repository)
         {
+            this.userManager = userManager;
             this.repository = repository;
         }
 
@@ -35,9 +39,13 @@ namespace AlcoFlightLogger.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            
+            if(flightEntry.Date.Equals(DateTime.MinValue))
+                flightEntry.Date = DateTime.Now;
 
             var flightEntryMapped = Mapper.Map<FlightEntry>(flightEntry);
-
+            var user = await userManager.GetUserAsync(HttpContext.User);
+            flightEntryMapped.UserId = user.Id;
             try
             {
                 this.repository.AddFlightEntry(flightEntryMapped);
