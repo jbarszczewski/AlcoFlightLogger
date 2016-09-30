@@ -44,8 +44,8 @@ namespace AlcoFlightLogger.Controllers
                 flightEntry.Date = DateTime.Now;
 
             var flightEntryMapped = Mapper.Map<FlightEntry>(flightEntry);
-            var user = await userManager.GetUserAsync(HttpContext.User);
-            flightEntryMapped.UserId = user.Id;
+            flightEntryMapped.UserName = User.Identity.Name;
+
             try
             {
                 this.repository.AddFlightEntry(flightEntryMapped);
@@ -79,7 +79,7 @@ namespace AlcoFlightLogger.Controllers
             
             var flightEntryMapped = Mapper.Map<FlightEntry>(flightEntry);
 
-            await this.repository.DeleteFlightEntry(flightEntryMapped);
+            this.repository.DeleteFlightEntry(flightEntryMapped);
             if (flightEntry == null)
             {
                 return NotFound();

@@ -23,7 +23,7 @@ namespace AlcoFlightLogger.Models
 
         public IEnumerable<FlightEntry> GetUserAllFlightEntries(string name)
         {
-            return this.context.FlightEntries.Where(x => x.User.UserName.Equals(name));
+            return this.context.FlightEntries.Where(x => x.UserName.Equals(name));
         }
 
         public async Task<FlightEntry> GetFlightEntryById(int id)
@@ -36,7 +36,7 @@ namespace AlcoFlightLogger.Models
             this.context.Add(flightEntry);
         }
 
-        public async Task<FlightEntry> DeleteFlightEntry(FlightEntry flightEntry)
+        public FlightEntry DeleteFlightEntry(FlightEntry flightEntry)
         {
             this.context.Remove(flightEntry).State = EntityState.Deleted;
             return flightEntry;

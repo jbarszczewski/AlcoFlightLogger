@@ -8,9 +8,10 @@ using AlcoFlightLogger.Data;
 namespace AlcoFlightLogger.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20160930155455_ApplicationUserUpdate1")]
+    partial class ApplicationUserUpdate1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1")

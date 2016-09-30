@@ -9,16 +9,10 @@ namespace AlcoFlightLogger.Models
     public class FlightEntry
     {
         public int FlightEntryId { get; set; }
-        
-        public string UserId { get; set; }
-
+        public string Name { get; set; }
+        public string UserName { get; set; }
         public DateTime Date { get; set; }
-
         public string Longitude { get; set; }
-
         public string Latitude { get; set; }
-        
-        [JsonIgnore]
-        public virtual ApplicationUser User { get; set; }
     }
 }

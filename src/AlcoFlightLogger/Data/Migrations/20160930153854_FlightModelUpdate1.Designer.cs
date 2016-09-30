@@ -8,9 +8,10 @@ using AlcoFlightLogger.Data;
 namespace AlcoFlightLogger.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20160930153854_FlightModelUpdate1")]
+    partial class FlightModelUpdate1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1")
@@ -70,6 +71,8 @@ namespace AlcoFlightLogger.Migrations
                     b.Property<int>("FlightEntryId")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("ApplicationUserId");
+
                     b.Property<DateTime>("Date");
 
                     b.Property<string>("Latitude");
@@ -81,6 +84,8 @@ namespace AlcoFlightLogger.Migrations
                     b.Property<string>("UserName");
 
                     b.HasKey("FlightEntryId");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("FlightEntries");
                 });
@@ -190,6 +195,13 @@ namespace AlcoFlightLogger.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("AlcoFlightLogger.Models.FlightEntry", b =>
+                {
+                    b.HasOne("AlcoFlightLogger.Models.ApplicationUser")
+                        .WithMany("FlightEntries")
+                        .HasForeignKey("ApplicationUserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>
