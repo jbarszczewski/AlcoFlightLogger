@@ -4,15 +4,19 @@ using AlcoFlightLogger.Models.FlightViewModels;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace AlcoFlightLogger.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly UserManager<Pilot> userManager;
         private IFlightsRepository repository;
 
-        public HomeController(IFlightsRepository repository)
+        public HomeController(UserManager<Pilot> userManager, IFlightsRepository repository)
         {
+            this.userManager = userManager;
             this.repository = repository;
         }
 
@@ -22,9 +26,9 @@ namespace AlcoFlightLogger.Controllers
         }
 
         [Authorize]
-        public IActionResult Flights()
+        public async Task<IActionResult> Flights()
         {
-            //TODO: add user identity
+            var user = await this.userManager.GetUserAsync(HttpContext.User);
             var flights = Mapper.Map<IEnumerable<FlightViewModel>>(this.repository.GetUserAllFlights(1));
             return View(flights);
         }

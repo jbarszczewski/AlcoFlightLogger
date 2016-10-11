@@ -20,8 +20,10 @@ namespace AlcoFlightLogger
 {
     public class Startup
     {
+        private IHostingEnvironment env;
         public Startup(IHostingEnvironment env)
         {
+            this.env = env;
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -90,7 +92,7 @@ namespace AlcoFlightLogger
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
             Mapper.Initialize(config =>
             {
@@ -101,7 +103,7 @@ namespace AlcoFlightLogger
 
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
 
-            if (env.IsDevelopment())
+            if (this.env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
