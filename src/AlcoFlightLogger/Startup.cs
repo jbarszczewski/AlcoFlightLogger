@@ -15,6 +15,8 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AlcoFlightLogger
 {
@@ -84,11 +86,13 @@ namespace AlcoFlightLogger
             services.AddTransient<ISmsSender, AuthMessageSender>();
 
             //TODO: uncomment when ssl sorted out
+
             //Add ssl
-            //services.Configure<MvcOptions>(options =>
-            //{
-            //    options.Filters.Add(new RequireHttpsAttribute());
-            //});
+            if (this.env.IsEnvironment("sslEnabled"))
+                services.Configure<MvcOptions>(options =>
+                {
+                    options.Filters.Add(new RequireHttpsAttribute());
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -120,14 +124,16 @@ namespace AlcoFlightLogger
             app.UseIdentity();
 
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
+            
+            //TODO: uncomment when ssl sorted out
+            if (this.env.IsEnvironment("sslEnabled"))
+                app.UseFacebookAuthentication(new FacebookOptions()
+                {
+                    AppId = Environment.GetEnvironmentVariable("FACEBOOKAUTH_APPID"),
+                    AppSecret = Environment.GetEnvironmentVariable("FACEBOOKAUTH_APPSECRET"),
+                });
 
-            /* TODO: uncomment when ssl sorted out
-            app.UseFacebookAuthentication(new FacebookOptions()
-            {
-                AppId = Configuration["FacebookAuthentication:AppId"],
-                AppSecret = Configuration["FacebookAuthentication:AppSecret"]
-            });
-            */
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
