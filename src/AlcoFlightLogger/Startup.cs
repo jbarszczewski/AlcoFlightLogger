@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,11 +9,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using AlcoFlightLogger.Data;
 using AlcoFlightLogger.Models;
-using AlcoFlightLogger.Models.FlightEntryViewModels;
+using AlcoFlightLogger.Models.FlightViewModels;
 using AlcoFlightLogger.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -50,7 +46,7 @@ namespace AlcoFlightLogger
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<ApplicationUser, IdentityRole>(config =>
+            services.AddIdentity<Pilot, IdentityRole<int>>(config =>
             {
                 config.Cookies.ApplicationCookie.Events = new CookieAuthenticationEvents()
                 {
@@ -70,7 +66,7 @@ namespace AlcoFlightLogger
                     }
                 };
             })
-                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddEntityFrameworkStores<ApplicationDbContext, int>()
                 .AddDefaultTokenProviders();
 
             services.AddMvc()
@@ -79,7 +75,7 @@ namespace AlcoFlightLogger
                     opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                     opt.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 });
-            services.AddScoped<IFlightEntriesRepository, FlightEntriesRepository>();
+            services.AddScoped<IFlightsRepository, FlightsRepository>();
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
@@ -98,7 +94,9 @@ namespace AlcoFlightLogger
         {
             Mapper.Initialize(config =>
             {
-                config.CreateMap<FlightEntryViewModel, FlightEntry>().ReverseMap();
+                config.CreateMap<Flight, FlightViewModel>().ReverseMap();
+                config.CreateMap<FuelPoint, FuelPointViewModel>().ReverseMap();
+                config.CreateMissingTypeMaps = true;
             });
 
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));

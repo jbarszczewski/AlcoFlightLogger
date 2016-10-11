@@ -10,7 +10,7 @@
         vm.flights = [];
         vm.errorMessage = "";
         vm.isBusy = true;
-        $http.get("/api/FlightEntries")
+        $http.get("/api/Flights")
             .then(function (response) {
                 // Success
                 angular.copy(response.data, vm.flights);
@@ -24,8 +24,8 @@
 
         vm.postFlight = function() {
             vm.isBusy = true;
-            var flightEntry = { Name: "test", Longitude: 1.2345, Latitude: 6.7890 };
-            $http.post("/api/FlightEntries", flightEntry)
+            var flight = { Name: "test", Longitude: 1.2345, Latitude: 6.7890 };
+            $http.post("/api/Flights", flight)
                 .then(function(response) {
                     vm.flights.push(response.data);
                 }, function(error) {

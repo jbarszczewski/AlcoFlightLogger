@@ -1,10 +1,9 @@
 ﻿using System;
 
-namespace AlcoFlightLogger.Models.FlightEntryViewModels
+namespace AlcoFlightLogger.Models.FlightViewModels
 {
-    public class FlightEntryViewModel
+    public class FuelPointViewModel
     {
-        public string Name { get; set; }
         public DateTime Date { get; set; }
 
         public string Longitude { get; set; }
