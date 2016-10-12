@@ -37,14 +37,14 @@ namespace AlcoFlightLogger.Controllers
             var flightVMs = Mapper.Map<IEnumerable<FlightViewModel>>(flights);
             return Ok(flightVMs);
         }
-        
+
         // POST: api/Flights
         //[HttpPost("")]
         //public async Task<IActionResult> PostFlight([FromBody] FlightViewModel flight)
         //{
         //    if (!ModelState.IsValid)
         //        return BadRequest(ModelState);
-            
+
         //    var flightMapped = Mapper.Map<Flight>(flight);
         //   // flightMapped.UserName = User.Identity;
 
@@ -83,10 +83,16 @@ namespace AlcoFlightLogger.Controllers
             try
             {
                 var user = await this.userManager.GetUserAsync(HttpContext.User);
-                var flights = this.repository.GetUserAllFlights(user.Id);
+                var flights = this.repository.GetUserAllFlights(user.Id).ToList();
+                if (!flights.Any())
+                {
+                    var flight = new Flight {FuelPoints = new List<FuelPoint>(), PilotId = user.Id};
+                    flights.Add(flight);
+                    this.repository.AddFlight(flight);
+                }
                 var lastFlight = flights.Last();
                 fuelPointMapped.FlightId = lastFlight.FlightId;
-                lastFlight.FuelPoints.Add(fuelPointMapped);
+                //lastFlight.FuelPoints.Add(fuelPointMapped);
                 this.repository.AddFuelPoint(fuelPointMapped);
             }
             catch (Exception ex)
@@ -108,7 +114,7 @@ namespace AlcoFlightLogger.Controllers
             {
                 return BadRequest(ModelState);
             }
-            
+
             var flightMapped = Mapper.Map<Flight>(flight);
 
             this.repository.DeleteFlight(flightMapped);

@@ -16,24 +16,32 @@
                 angular.copy(response.data, vm.flights);
             }, function (error) {
                 // Failure
-                vm.errorMessage = "Failed to retrieve flight log: " + error;
+                vm.errorMessage = "Failed to retrieve flight log: " + error.message;
             })
             .finally(function () {
                 vm.isBusy = false;
             });
 
         vm.postFlight = function() {
-            vm.isBusy = true;
-            var flight = { Name: "test", Longitude: 1.2345, Latitude: 6.7890 };
-            $http.post("/api/Flights", flight)
-                .then(function(response) {
-                    vm.flights.push(response.data);
-                }, function(error) {
-                    vm.errorMessage = "Failsed to post new flight: " + error;
-                })
-                .finally(function() {
-                    vm.isBusy = false;
+            if (navigator.geolocation) {
+                vm.isBusy = true;
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var fuelPoint = {
+                        Date: new Date(),
+                        Latitude: position.coords.latitude,
+                        Longitude: position.coords.longitude
+                    };
+                    $http.post("/api/Flights/FuelPoint", fuelPoint)
+                        .then(function(response) {
+                            vm.flights.push(response.data);
+                        }, function(error) {
+                            vm.errorMessage = "Failed to post new flight: " + error.message;
+                        })
+                        .finally(function() {
+                            vm.isBusy = false;
+                        });
                 });
+            }
         }
     }
 })();
