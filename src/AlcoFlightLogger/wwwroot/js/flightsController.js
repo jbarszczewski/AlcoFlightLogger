@@ -22,25 +22,35 @@
                 vm.isBusy = false;
             });
 
-        vm.postFlight = function() {
+        vm.postFlight = function () {
+            var ua = navigator.userAgent.toLowerCase(),
+            isAndroid = ua.indexOf("android") > -1,
+            geoTimeout = isAndroid ? 15000 : 1000;
+
+            var successPosition = function (position) {
+                var fuelPoint = {
+                    Date: new Date(),
+                    Latitude: position.coords.latitude,
+                    Longitude: position.coords.longitude
+                };
+                $http.post("/api/Flights/FuelPoint", fuelPoint)
+                    .then(function (response) {
+                        vm.flights.push(response.data);
+                    }, function (error) {
+                        vm.errorMessage = "Failed to post new flight: " + error.message;
+                    })
+                    .finally(function () {
+                        vm.isBusy = false;
+                    });
+            }
+
+            var errorPosition = function (err) {
+
+            }
+
             if (navigator.geolocation) {
                 vm.isBusy = true;
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    var fuelPoint = {
-                        Date: new Date(),
-                        Latitude: position.coords.latitude,
-                        Longitude: position.coords.longitude
-                    };
-                    $http.post("/api/Flights/FuelPoint", fuelPoint)
-                        .then(function(response) {
-                            vm.flights.push(response.data);
-                        }, function(error) {
-                            vm.errorMessage = "Failed to post new flight: " + error.message;
-                        })
-                        .finally(function() {
-                            vm.isBusy = false;
-                        });
-                });
+                navigator.geolocation.getCurrentPosition(successPosition, errorPosition, { enableHighAccuracy: true, maximumAge: 3000, timeout: geoTimeout });
             }
         }
     }

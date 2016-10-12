@@ -16,6 +16,10 @@
 
         // Try HTML5 geolocation.
         if (navigator.geolocation) {
+            var ua = navigator.userAgent.toLowerCase(),
+           isAndroid = ua.indexOf("android") > -1,
+           geoTimeout = isAndroid ? 15000 : 1000;
+
             navigator.geolocation.getCurrentPosition(function(position) {
                 var pos = {
                     lat: position.coords.latitude,
@@ -27,7 +31,7 @@
                 map.setCenter(pos);
             }, function() {
                 handleLocationError(true, infoWindow, map.getCenter());
-            });
+            }, null, { enableHighAccuracy: true, maximumAge: 3000, timeout: geoTimeout });
         } else {
             // Browser doesn't support Geolocation
             handleLocationError(false, infoWindow, map.getCenter());
