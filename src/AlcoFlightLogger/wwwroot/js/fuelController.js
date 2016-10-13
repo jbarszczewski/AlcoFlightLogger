@@ -12,6 +12,7 @@
 
         vm.postFlight = function () {
             var successPosition = function (position) {
+                vm.errorMessage = "Position found! Accuracy: " + position.coords.accuracy + " meters.";
                 var fuelPoint = {
                     Date: new Date(),
                     Latitude: position.coords.latitude,
@@ -29,7 +30,7 @@
             }
 
             var errorPosition = function (err) {
-
+                vm.errorMessage = "Failed to get position. Error(" + err.code + "): " + err.message;
             }
 
             if (navigator.geolocation) {
