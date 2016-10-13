@@ -26,11 +26,9 @@ namespace AlcoFlightLogger.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Flights()
+        public IActionResult Flights()
         {
-            var user = await this.userManager.GetUserAsync(HttpContext.User);
-            var flights = Mapper.Map<IEnumerable<FlightViewModel>>(this.repository.GetUserAllFlights(1));
-            return View(flights);
+            return View();
         }
     }
 }

@@ -2,8 +2,22 @@
     ViewData["Title"] = "Home Page";
 }
 
+@section Scripts {
+    <script src="~/lib/angular/angular.min.js"></script>
+    <script src="~/js/app-flights.js"></script>
+    <script src="~/js/fuelController.js"></script>
+}
+
 <br />
 <div id="map_canvas" style="width: 80%; height: 600px;">
+</div>
+
+<div class="row" ng-app="app-flights">
+    <div class="col-md-6 col-md-offset-3" ng-controller="fuelController as vm">
+        <div class="text-danger" ng-show="vm.errorMessage">{{ vm.errorMessage }}</div>
+        <div class="text-center" ng-show="vm.isBusy"><i class="fa fa-spinner fa-spin"></i> Processing...</div>
+        <button class="btn btn-primary btn-lg" ng-click="vm.postFlight()">I fly!</button>
+    </div>
 </div>
 
 <script type="text/javascript">
@@ -16,11 +30,8 @@
 
         // Try HTML5 geolocation.
         if (navigator.geolocation) {
-            var ua = navigator.userAgent.toLowerCase(),
-           isAndroid = ua.indexOf("android") > -1,
-           geoTimeout = isAndroid ? 15000 : 1000;
 
-            navigator.geolocation.getCurrentPosition(function(position) {
+            navigator.geolocation.getCurrentPosition(function (position) {
                 var pos = {
                     lat: position.coords.latitude,
                     lng: position.coords.longitude
@@ -29,9 +40,9 @@
                 infoWindow.setPosition(pos);
                 infoWindow.setContent('Location found.');
                 map.setCenter(pos);
-            }, function() {
+            }, function () {
                 handleLocationError(true, infoWindow, map.getCenter());
-            }, { enableHighAccuracy: true, maximumAge: 3000, timeout: geoTimeout });
+            }, { enableHighAccuracy: true, timeout: 20000 });
         } else {
             // Browser doesn't support Geolocation
             handleLocationError(false, infoWindow, map.getCenter());
