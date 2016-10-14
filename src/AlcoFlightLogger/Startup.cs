@@ -90,7 +90,7 @@ namespace AlcoFlightLogger
             //TODO: uncomment when ssl sorted out
 
             //Add ssl
-            if (this.env.IsEnvironment("sslEnabled"))
+            if (this.env.IsEnvironment("Development"))
                 services.Configure<MvcOptions>(options =>
                 {
                     options.Filters.Add(new RequireHttpsAttribute());
@@ -129,13 +129,16 @@ namespace AlcoFlightLogger
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
             
             //TODO: uncomment when ssl sorted out
-            if (this.env.IsEnvironment("sslEnabled"))
+            if (this.env.IsEnvironment("Development"))
+            {
+                var appId = Environment.GetEnvironmentVariable("FACEBOOKAUTH_APPID") ?? Configuration["FACEBOOKAUTH_APPID"];
+                var appSecret = Environment.GetEnvironmentVariable("FACEBOOKAUTH_APPSECRET") ?? Configuration["FACEBOOKAUTH_APPSECRET"];
                 app.UseFacebookAuthentication(new FacebookOptions()
                 {
-                    AppId = Environment.GetEnvironmentVariable("FACEBOOKAUTH_APPID"),
-                    AppSecret = Environment.GetEnvironmentVariable("FACEBOOKAUTH_APPSECRET"),
+                    AppId = appId,
+                    AppSecret = appSecret,
                 });
-
+            }
 
             app.UseMvc(routes =>
             {
