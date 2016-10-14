@@ -77,6 +77,7 @@ namespace AlcoFlightLogger
             services.AddMvc()
                 .AddJsonOptions(opt =>
                 {
+                    opt.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
                     opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                     opt.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 });
@@ -101,9 +102,10 @@ namespace AlcoFlightLogger
         {
             Mapper.Initialize(config =>
             {
-                config.CreateMap<Flight, FlightViewModel>().ReverseMap();
+                config.CreateMap<Flight, FlightViewModel>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.FlightId))
+                .ReverseMap();
                 config.CreateMap<FuelPoint, FuelPointViewModel>().ReverseMap();
-                config.CreateMissingTypeMaps = true;
             });
 
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));

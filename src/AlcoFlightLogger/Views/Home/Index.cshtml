@@ -4,61 +4,14 @@
 
 @section Scripts {
     <script src="~/lib/angular/angular.min.js"></script>
+    <script src="~/lib/angular-route/angular-route.min.js"></script>
     <script src="~/js/app-flights.js"></script>
     <script src="~/js/fuelController.js"></script>
+    <script src="~/js/flightsController.js"></script>
+    <script src="~/js/flightDetailsController.js"></script>
 }
 
-<br />
-<div id="map_canvas" style="width: 80%; height: 600px;">
-</div>
 
 <div class="row" ng-app="app-flights">
-    <div class="col-md-6 col-md-offset-3" ng-controller="fuelController as vm">
-        <div class="text-danger" ng-show="vm.errorMessage">{{ vm.errorMessage }}</div>
-        <div class="text-center" ng-show="vm.isBusy"><i class="fa fa-spinner fa-spin"></i> Processing...</div>
-        <button class="btn btn-primary btn-lg" ng-click="vm.postFlight()">I fly!</button>
-    </div>
+    <div ng-view></div>
 </div>
-
-<script type="text/javascript">
-    function initMap() {
-        var map = new google.maps.Map(document.getElementById('map_canvas'), {
-            center: { lat: -34.397, lng: 0.644 },
-            zoom: 20
-        });
-        var infoWindow = new google.maps.InfoWindow({ map: map });
-
-        // Try HTML5 geolocation.
-        if (navigator.geolocation) {
-
-            navigator.geolocation.getCurrentPosition(function (position) {
-                var pos = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-
-                infoWindow.setPosition(pos);
-                infoWindow.setContent('Location found.');
-                map.setCenter(pos);
-            }, function () {
-                handleLocationError(true, infoWindow, map.getCenter());
-            }, { enableHighAccuracy: true, timeout: 20000 });
-        } else {
-            // Browser doesn't support Geolocation
-            handleLocationError(false, infoWindow, map.getCenter());
-        }
-    }
-
-    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-        infoWindow.setPosition(pos);
-        infoWindow.setContent(browserHasGeolocation ?
-            'Error: The Geolocation service failed.' :
-            'Error: Your browser doesn\'t support geolocation.');
-    }
-
-
-</script>
-<script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAJvxe_VovUSvjSVJFre82FmcBLuP6-VwA&callback=initMap">
-</script>
-

@@ -10,7 +10,7 @@
         vm.errorMessage = "";
         vm.isBusy = false;
 
-        vm.postFlight = function () {
+        vm.postFuelPoint = function () {
             var successPosition = function (position) {
                 vm.errorMessage = "Position found! Accuracy: " + position.coords.accuracy + " meters.";
                 var fuelPoint = {
@@ -20,9 +20,9 @@
                 };
                 $http.post("/api/Flights/FuelPoint", fuelPoint)
                     .then(function (response) {
-                        vm.flights.push(response.data);
+                        vm.errorMessage = "Fuel point saved!";
                     }, function (error) {
-                        vm.errorMessage = "Failed to post new flight: " + error.message;
+                        vm.errorMessage = "Failed to post fuel point: " + error.message;
                     })
                     .finally(function () {
                         vm.isBusy = false;

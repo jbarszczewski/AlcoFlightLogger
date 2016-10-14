@@ -28,7 +28,7 @@ namespace AlcoFlightLogger.Models
 
         public async Task<Flight> GetFlightById(int id)
         {
-            return await this.context.Flights.SingleOrDefaultAsync(m => m.FlightId.Equals(id));
+            return await this.context.Flights.Include(f => f.FuelPoints).SingleOrDefaultAsync(m => m.FlightId.Equals(id));
         }
         
         public void AddFlight(Flight flight)

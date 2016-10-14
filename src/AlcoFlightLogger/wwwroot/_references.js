@@ -1,5 +1,6 @@
 ﻿/// <autosync enabled="true" />
 /// <reference path="js/app-flights.js" />
+/// <reference path="js/flightdetailscontroller.js" />
 /// <reference path="js/flightsController.js" />
 /// <reference path="js/fuelcontroller.js" />
 /// <reference path="js/site.js" />

@@ -1,0 +1,20 @@
+﻿<div class="col-md-6 col-md-offset-3">
+    <a ng-href="#/" class="btn btn-sm btn-primary">Back</a>
+    <div class="text-danger" ng-show="vm.errorMessage">{{ vm.errorMessage }}</div>
+    <div class="text-center" ng-show="vm.isBusy">
+        <i class="fa fa-spinner fa-spin"></i> Processing...
+    </div>
+    <table class="table table-responsive table-striped">
+        <tr>
+            <th>Name</th>
+            <th>Score</th>
+            <th>FuelPoints</th>
+        </tr>
+        <tr ng-repeat="flight in vm.flights">
+            <td data-title="Name">{{ flight.name }}</td>
+            <td>{{ flight.score }}</td>
+            <td>{{ flight.fuelPoints.length }}</td>
+            <td><a ng-href="#/details/{{ flight.id }}" class="btn btn-sm btn-primary">Details</a></td>
+        </tr>
+    </table>
+</div>

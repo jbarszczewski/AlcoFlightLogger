@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using AlcoFlightLogger.Models;
-using AlcoFlightLogger.Models.FlightViewModels;
-using AutoMapper;
+﻿using AlcoFlightLogger.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -20,13 +17,8 @@ namespace AlcoFlightLogger.Controllers
             this.repository = repository;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
         [Authorize]
-        public IActionResult Flights()
+        public IActionResult Index()
         {
             return View();
         }

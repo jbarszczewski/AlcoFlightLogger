@@ -1,16 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using AlcoFlightLogger.Models;
+using AlcoFlightLogger.Models.FlightViewModels;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using AlcoFlightLogger.Models.FlightViewModels;
-using System.Security.Claims;
-using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AlcoFlightLogger.Controllers
 {
@@ -19,8 +16,8 @@ namespace AlcoFlightLogger.Controllers
     [Route("api/Flights")]
     public class FlightsController : Controller
     {
-        private readonly UserManager<Pilot> userManager;
         private readonly IFlightsRepository repository;
+        private readonly UserManager<Pilot> userManager;
 
         public FlightsController(UserManager<Pilot> userManager, IFlightsRepository repository)
         {
@@ -32,10 +29,19 @@ namespace AlcoFlightLogger.Controllers
         [HttpGet("")]
         public async Task<IActionResult> GetFlights()
         {
-            var user = await this.userManager.GetUserAsync(HttpContext.User);
-            var flights = this.repository.GetUserAllFlights(user.Id);
+            var user = await userManager.GetUserAsync(HttpContext.User);
+            var flights = repository.GetUserAllFlights(user.Id);
             var flightVMs = Mapper.Map<IEnumerable<FlightViewModel>>(flights);
             return Ok(flightVMs);
+        }
+        
+        // GET: api/Flights/id/1
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetFlight(int id)
+        {
+            var flight = await repository.GetFlightById(id);
+            var flightVM = Mapper.Map<FlightViewModel>(flight);
+            return Ok(flightVM);
         }
 
         // POST: api/Flights
@@ -82,28 +88,29 @@ namespace AlcoFlightLogger.Controllers
 
             try
             {
-                var user = await this.userManager.GetUserAsync(HttpContext.User);
-                var flights = this.repository.GetUserAllFlights(user.Id).ToList();
-                if (!flights.Any())
+                var user = await userManager.GetUserAsync(HttpContext.User);
+                var flights = repository.GetUserAllFlights(user.Id).ToList();
+                var lastFlight = flights.LastOrDefault();
+                if (lastFlight == null ||
+                    (lastFlight.FuelPoints.Any() && lastFlight.FuelPoints.Last().Date.AddMinutes(5) < DateTime.Now))
                 {
-                    var flight = new Flight {FuelPoints = new List<FuelPoint>(), PilotId = user.Id};
-                    flights.Add(flight);
-                    this.repository.AddFlight(flight);
+                    lastFlight = new Flight {FuelPoints = new List<FuelPoint>(), PilotId = user.Id};
+                    flights.Add(lastFlight);
+                    repository.AddFlight(lastFlight);
                 }
-                var lastFlight = flights.Last();
+
                 fuelPointMapped.FlightId = lastFlight.FlightId;
                 //lastFlight.FuelPoints.Add(fuelPointMapped);
-                this.repository.AddFuelPoint(fuelPointMapped);
+                repository.AddFuelPoint(fuelPointMapped);
             }
             catch (Exception ex)
             {
                 return BadRequest();
             }
 
-            if (await this.repository.SaveChanges())
+            if (await repository.SaveChanges())
                 return Created($"api/Flights/FuelPoint{fuelPointMapped.FuelPointId}", fuelPointMapped);
-            else
-                return BadRequest("Couldn't save new flight entry.");
+            return BadRequest("Couldn't save new flight entry.");
         }
 
         // DELETE: api/Flights/
@@ -117,20 +124,19 @@ namespace AlcoFlightLogger.Controllers
 
             var flightMapped = Mapper.Map<Flight>(flight);
 
-            this.repository.DeleteFlight(flightMapped);
+            repository.DeleteFlight(flightMapped);
             if (flight == null)
             {
                 return NotFound();
             }
-            if (await this.repository.SaveChanges())
+            if (await repository.SaveChanges())
                 return Ok(flightMapped);
-            else
-                return BadRequest("Couldn't save new flight entry.");
+            return BadRequest("Couldn't save new flight entry.");
         }
 
         private bool FlightExists(int id)
         {
-            return this.repository.GetFlightById(id).Result != null;
+            return repository.GetFlightById(id).Result != null;
         }
     }
 }
