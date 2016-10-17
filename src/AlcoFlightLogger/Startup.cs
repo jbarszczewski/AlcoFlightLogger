@@ -50,7 +50,7 @@ namespace AlcoFlightLogger
             // Add framework services.
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
+            
             services.AddIdentity<Pilot, IdentityRole<int>>(config =>
             {
                 config.Cookies.ApplicationCookie.Events = new CookieAuthenticationEvents()
@@ -86,11 +86,9 @@ namespace AlcoFlightLogger
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
-
-            //TODO: uncomment when ssl sorted out
-
+            
             //Add ssl
-            if (this.env.IsEnvironment("Development"))
+            if (this.env.IsProduction())
                 services.Configure<MvcOptions>(options =>
                 {
                     options.Filters.Add(new RequireHttpsAttribute());
@@ -128,8 +126,7 @@ namespace AlcoFlightLogger
 
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
             
-            //TODO: uncomment when ssl sorted out
-            if (this.env.IsEnvironment("Development"))
+            if (this.env.IsProduction())
             {
                 var appId = Environment.GetEnvironmentVariable("FACEBOOKAUTH_APPID") ?? Configuration["FACEBOOKAUTH_APPID"];
                 var appSecret = Environment.GetEnvironmentVariable("FACEBOOKAUTH_APPSECRET") ?? Configuration["FACEBOOKAUTH_APPSECRET"];
