@@ -92,7 +92,7 @@ namespace AlcoFlightLogger.Controllers
                 var flights = repository.GetUserAllFlights(user.Id).ToList();
                 var lastFlight = flights.LastOrDefault();
                 if (lastFlight == null ||
-                    (lastFlight.FuelPoints.Any() && lastFlight.FuelPoints.Last().Date.AddMinutes(5) < DateTime.Now))
+                    (lastFlight.FuelPoints.Any() && lastFlight.FuelPoints.Last().Date.AddHours(4) < DateTime.Now))
                 {
                     lastFlight = new Flight {FuelPoints = new List<FuelPoint>(), PilotId = user.Id};
                     flights.Add(lastFlight);
