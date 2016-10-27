@@ -34,7 +34,7 @@ namespace AlcoFlightLogger.Controllers
             var flightVMs = Mapper.Map<IEnumerable<FlightViewModel>>(flights);
             return Ok(flightVMs);
         }
-        
+
         // GET: api/Flights/id/1
         [HttpGet("{id}")]
         public async Task<IActionResult> GetFlight(int id)
@@ -44,37 +44,33 @@ namespace AlcoFlightLogger.Controllers
             return Ok(flightVM);
         }
 
-        // POST: api/Flights
-        //[HttpPost("")]
-        //public async Task<IActionResult> PostFlight([FromBody] FlightViewModel flight)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest(ModelState);
+        [HttpPut("")]
+        public async Task<IActionResult> PutFlight([FromBody] FlightViewModel flightViewModel)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var flight = Mapper.Map<Flight>(flightViewModel);
 
-        //    var flightMapped = Mapper.Map<Flight>(flight);
-        //   // flightMapped.UserName = User.Identity;
+            if (!this.FlightExists(flight.FlightId))
+            {
+                if (flight.PilotId == 0)
+                {
+                    var user = await userManager.GetUserAsync(HttpContext.User);
+                    flight.PilotId = user.Id;
+                }
 
-        //    try
-        //    {
-        //        this.repository.AddFlight(flightMapped);
-        //    }
-        //    catch (DbUpdateException)
-        //    {
-        //        if (FlightExists(flightMapped.FlightId))
-        //        {
-        //            return new StatusCodeResult(StatusCodes.Status409Conflict);
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
+                repository.AddFlight(flight);
+            }
+            else
+            {
+                flight = await this.repository.ModifyFlight(flight);
+            }
 
-        //    if (await this.repository.SaveChanges())
-        //        return Created($"api/Flights/{flightMapped.FlightId}", flight);
-        //    else
-        //        return BadRequest("Couldn't save new flight entry.");
-        //}
+            if (await this.repository.SaveChanges())
+                return Ok(Mapper.Map<FlightViewModel>(flight));
+            else
+                return BadRequest("Couldn't save flight entry.");
+        }
 
         [HttpPost("FuelPoint")]
         public async Task<IActionResult> PostFuelPoint([FromBody] FuelPointViewModel fuelPoint)
@@ -94,7 +90,7 @@ namespace AlcoFlightLogger.Controllers
                 if (lastFlight == null ||
                     (lastFlight.FuelPoints.Any() && lastFlight.FuelPoints.Last().Date.AddHours(4) < DateTime.Now))
                 {
-                    lastFlight = new Flight {FuelPoints = new List<FuelPoint>(), PilotId = user.Id};
+                    lastFlight = new Flight { Name = $"Flight on {DateTime.Now.DayOfWeek}", FuelPoints = new List<FuelPoint>(), PilotId = user.Id };
                     flights.Add(lastFlight);
                     repository.AddFlight(lastFlight);
                 }

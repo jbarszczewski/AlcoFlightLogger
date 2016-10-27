@@ -101,8 +101,9 @@ namespace AlcoFlightLogger
             Mapper.Initialize(config =>
             {
                 config.CreateMap<Flight, FlightViewModel>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.FlightId))
-                .ReverseMap();
+                    .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.FlightId))
+                    .ReverseMap()
+                    .ForMember(dest => dest.FlightId, opt => opt.MapFrom(src => src.Id));
                 config.CreateMap<FuelPoint, FuelPointViewModel>().ReverseMap();
             });
 

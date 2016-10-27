@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AlcoFlightLogger.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace AlcoFlightLogger.Models
 {
@@ -33,7 +34,20 @@ namespace AlcoFlightLogger.Models
         
         public void AddFlight(Flight flight)
         {
-            this.context.Add(flight);
+            this.context.Add(flight).State = EntityState.Added;
+        }
+
+        public async Task<Flight> ModifyFlight(Flight flight)
+        {
+            var dbFlight = await this.context.Flights.SingleOrDefaultAsync(f => f.FlightId.Equals(flight.FlightId));
+            if (dbFlight != null)
+            {
+                dbFlight.Name = flight.Name;
+                dbFlight.Description = flight.Description;
+                dbFlight.Score = flight.Score;
+            }
+
+            return dbFlight;
         }
 
         public Flight DeleteFlight(Flight flight)
@@ -49,7 +63,7 @@ namespace AlcoFlightLogger.Models
 
         public void AddFuelPoint(FuelPoint fuelPointMapped)
         {
-            this.context.Add(fuelPointMapped);
+            this.context.Add(fuelPointMapped).State = EntityState.Added;
         }
     }
 }

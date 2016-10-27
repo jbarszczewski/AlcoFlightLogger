@@ -14,5 +14,6 @@ namespace AlcoFlightLogger.Models
         Flight DeleteFlight(Flight flight);
         Task<bool> SaveChanges();
         void AddFuelPoint(FuelPoint fuelPointMapped);
+        Task<Flight> ModifyFlight(Flight flight);
     }
 }

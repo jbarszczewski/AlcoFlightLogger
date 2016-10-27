@@ -49,5 +49,21 @@
             .finally(function () {
                 vm.isBusy = false;
             });
+
+        vm.modifyFlight = function() {
+            vm.isBusy = true;
+            vm.errorMessage = "Saving...";
+            $http.put("/api/Flights/", vm.flight)
+                .then(function(response) {
+                    //success
+                    vm.errorMessage = "Flight modified!";
+                }, function(error) {
+                    //failure
+                    vm.errorMessage = "Failed to modify the flight: " + error.message;
+                })
+                .finally(function() {
+                    vm.isBusy = false;
+                });
+        };
     }
 })();

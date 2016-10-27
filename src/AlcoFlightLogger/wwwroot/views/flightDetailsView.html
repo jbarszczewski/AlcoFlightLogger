@@ -6,9 +6,21 @@
     <div class="text-center" ng-show="vm.isBusy">
         <i class="fa fa-spinner fa-spin"></i> Processing...
     </div>
-    <div class="text-primary">Name: {{ vm.flight.name }}</div>
-    <div class="text-primary">Description: {{ vm.flight.description }}</div>
-    <div class="text-primary">Score: {{ vm.flight.score }}</div>
+
+    <form novalidate name="flightDetails" ng-submit="vm.modifyFlight()">
+        <div class="form-group">
+            <label for="name">Flight Name</label>
+            <input class="form-control" type="text" id="name" name="name" ng-model="vm.flight.name"/>
+            <label for="name">Flight Description</label>
+            <input class="form-control" type="text" id="name" name="name" ng-model="vm.flight.description" />
+            <label for="name">Flight Score</label>
+            <input class="form-control" type="number" id="name" name="name" ng-model="vm.flight.score" />
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Save" class="btn bg-success"/>
+        </div>
+    </form>
+
     <div class="text-primary">Refueling: {{ vm.flight.fuelPoints.length }}</div>
     <table class="table table-responsive table-striped">
         <tr>
