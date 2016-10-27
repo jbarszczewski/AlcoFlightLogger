@@ -9,15 +9,25 @@
 
     <form novalidate name="flightDetails" ng-submit="vm.modifyFlight()">
         <div class="form-group">
-            <label for="name">Flight Name</label>
-            <input class="form-control" type="text" id="name" name="name" ng-model="vm.flight.name"/>
+            <div>
+                <label for="name">Flight Name</label>
+                <input class="form-control" type="text" id="name" name="name" ng-model="vm.flight.name" required ng-minlength="3" />
+                <span class="text-warning" ng-show="flightDetails.name.$error.required">You must enter a name.</span>
+                <span class="text-warning" ng-show="flightDetails.name.$error.minlength">Name must be at least 3 characters long.</span>
+            </div>
             <label for="name">Flight Description</label>
-            <input class="form-control" type="text" id="name" name="name" ng-model="vm.flight.description" />
-            <label for="name">Flight Score</label>
-            <input class="form-control" type="number" id="name" name="name" ng-model="vm.flight.score" />
+            <input class="form-control" type="text" id="description" name="description" ng-model="vm.flight.description" />
+
+            <div>
+                <label for="name">Flight Score</label>
+                <input class="form-control" type="number" id="score" name="score" ng-model="vm.flight.score" required="" ng-pattern="/^[0-9]{1,7}$/"/>
+                <span class="text-warning" ng-show="flightDetails.score.$error.pattern">Score need to be positive natural number.</span>
+                <span class="text-warning" ng-show="flightDetails.score.$error.required">You must enter a score.</span>
+            </div>
         </div>
         <div class="form-group">
-            <input type="submit" value="Save" class="btn bg-success"/>
+            <input type="submit" value="Save" class="btn bg-success"
+                   ng-disabled="flightDetails.$invalid" />
         </div>
     </form>
 
